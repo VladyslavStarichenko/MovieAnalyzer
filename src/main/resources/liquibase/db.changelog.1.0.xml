@@ -1,0 +1,306 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <property name="uuid_type" value="uuid" dbms="postgresql"/>
+    <property name="uuid_function" value="uid.uuid_generate_v4()" dbms="postgresql"/>
+
+
+    <changeSet id="1.0.0" author="goldsilver12">
+        <createTable tableName="users">
+            <column name="id" type="${uuid_type}">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="user_name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created" type="TIMESTAMP" defaultValue="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated" type="TIMESTAMP" defaultValue="now()">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="role_id" type="BIGINT" >
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(25)" >
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.1" author="goldsilver12">
+        <createTable tableName="roles">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="created" type="TIMESTAMP" defaultValue="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated" type="TIMESTAMP" defaultValue="now()">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="status" type="VARCHAR(25)" defaultValue="ACTIVE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.2" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="users"
+                                 constraintName="fk_user_roles"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="roles"/>
+    </changeSet>
+
+    <changeSet id="1.0.3" author="goldsilver12">
+        <insert tableName="roles">
+            <column name="name" value="ROLE_ADMIN"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="ROLE_VIEWER"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="name" value="ROLE_CINEMA_ADMIN"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="1.0.4" author="goldsilver12">
+        <insert tableName="users">
+            <column name="id" value="076a697c-2d1f-11ec-8d3d-0242ac130003"/>
+            <column name="user_name" value="goldsilverTest1"/>
+            <column name="password" value="$2a$10$V003J.CCI6Al4EXozE/EfeHGIysls/i0E62IuJ7fIuEvmpHxAXcLK"/>
+            <column name="created" value="2021-09-29 22:54:27.291000"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="role_id" value="4"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="076a697c-2d1f-11ec-8d3d-0242ac130004"/>
+            <column name="user_name" value="goldsilverTest2"/>
+            <column name="password" value="$2a$10$V003J.CCI6Al4EXozE/EfeHGIysls/i0E62IuJ7fIuEvmpHxAXcLK"/>
+            <column name="created" value="2021-09-29 22:54:27.291000"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="role_id" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="1.0.5" author="goldsilver12">
+        <createTable tableName="cinema">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="address" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="user_id" type="${uuid_type}">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.6" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="cinema"
+                                 constraintName="fk_cinema_user"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+    <changeSet id="1.0.7" author="goldsilver12">
+        <createTable tableName="hall">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="color" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="cinema_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="sit_count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.8" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="cinema_id"
+                                 baseTableName="hall"
+                                 constraintName="fk_cinema_hall"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cinema"/>
+    </changeSet>
+
+
+    <changeSet id="1.0.9" author="goldsilver12">
+        <createTable tableName="movie">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="hall_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="author" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="ticket_price" type="INT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="duration" type="INT">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.10" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="hall_id"
+                                 baseTableName="movie"
+                                 constraintName="fk_movie_hall"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="hall"/>
+    </changeSet>
+
+    <changeSet id="1.0.11" author="goldsilver12">
+        <createTable tableName="viewer">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="${uuid_type}">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.12" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="viewer"
+                                 constraintName="fk_user_viewer"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+
+    <changeSet id="1.0.13" author="goldsilver12">
+        <createTable tableName="watch">
+            <column name="movie_id" type="BIGINT" >
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="viewer_id" type="BIGINT" >
+                <constraints  nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.14" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="viewer_id"
+                                 baseTableName="watch"
+                                 constraintName="fk_viewer_watch"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="viewer"/>
+    </changeSet>
+
+    <changeSet id="1.0.15" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="movie_id"
+                                 baseTableName="watch"
+                                 constraintName="fk_movie_watch"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="movie"/>
+    </changeSet>
+
+    <changeSet id="1.0.16" author="goldsilver12">
+        <createTable tableName="emotion">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="value" type="INT">
+                <constraints  nullable="false"/>
+            </column>
+
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+
+            <column name="watch_id" type="BIGINT" >
+                <constraints  nullable="false"/>
+            </column>
+
+        </createTable>
+
+    </changeSet>
+
+    <changeSet id="1.0.17" author="goldsilver12">
+        <addForeignKeyConstraint baseColumnNames="watch_id"
+                                 baseTableName="emotion"
+                                 constraintName="fk_emotion_watch"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="watch"/>
+    </changeSet>
+
+</databaseChangeLog>
