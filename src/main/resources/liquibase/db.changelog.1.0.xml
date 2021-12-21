@@ -239,6 +239,10 @@
 
     <changeSet id="1.0.13" author="goldsilver12">
         <createTable tableName="watch">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
             <column name="movie_id" type="BIGINT" >
                 <constraints nullable="false"/>
             </column>
